@@ -1,0 +1,445 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <world name="default">
+    <scene>
+      <ambient>0.500000 0.500000 0.500000 1.000000</ambient>
+      <background>0.500000 0.500000 0.500000 1.000000</background>
+      <shadows>0</shadows>
+    </scene>
+    <physics type="ode">
+      <gravity>0.000000 0.000000 -9.800000</gravity>
+      <ode>
+        <solver>
+          <type>quick</type>
+          <iters>200</iters>
+          <sor>1.300000</sor>
+        </solver>
+        <constraints>
+          <cfm>0.000000</cfm>
+          <erp>0.200000</erp>
+          <contact_max_correcting_vel>100.000000</contact_max_correcting_vel>
+          <contact_surface_layer>0.001000</contact_surface_layer>
+        </constraints>
+      </ode>
+      <real_time_update_rate>1000.000000</real_time_update_rate>
+      <max_step_size>0.002000</max_step_size>
+    </physics>
+    <model name="docking_base">
+      <link name="docking_pattern">
+        <pose>2.0 0 0 0 0 0</pose>
+        <collision name="docking_pattern_collision">
+          <geometry>
+            <mesh>
+              <uri>model://media/models/docking_pattern/meshes/models/docking_pattern.stl</uri>
+              <scale>1 1 1</scale>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name="docking_pattern_visual">
+          <geometry>
+            <mesh>
+              <uri>model://media/models/docking_pattern/meshes/models/docking_pattern.stl</uri>
+              <scale>1 1 1</scale>
+            </mesh>
+          </geometry>
+          <cast_shadows>false</cast_shadows>
+        </visual>
+      </link>
+      <static>true</static>
+    </model>
+    <model name="7thmap">
+      <pose>9 -10 0  0 0 0</pose>
+      <static>true</static>
+      <link name="body">
+        <collision name="collision">
+          <geometry>
+            <mesh><uri>model://media/models/7thmap_new/7thmap.dae</uri></mesh>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>100000000.000000</mu>
+                <mu2>100000000.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
+              </ode>
+            </friction>
+            <bounce>
+              <restitution_coefficient>0.000000</restitution_coefficient>
+              <threshold>1000000.000000</threshold>
+            </bounce>
+            <contact>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>10000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>100.000000</max_vel>
+                <min_depth>0.000100</min_depth>
+              </ode>
+            </contact>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <mesh><uri>model://media/models/7thmap_new/7thmap.dae</uri></mesh>
+          </geometry>
+          <material>
+            <script>
+              <name>__default__</name>
+            </script>
+          </material>
+          <cast_shadows>0</cast_shadows>
+        </visual>
+        <velocity_decay>
+          <linear>0.000000</linear>
+          <angular>0.000000</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+      </link>
+      <static>1</static>
+    </model>
+    <light name="my_light_01" type="directional">
+      <pose>0.000000 0.000000 30.000000 0.000000 -0.000000 0.000000</pose>
+      <diffuse>0.900000 0.900000 0.900000 1.000000</diffuse>
+      <specular>0.600000 0.600000 0.600000 1.000000</specular>
+      <attenuation>
+        <range>20.000000</range>
+      </attenuation>
+      <direction>0.000000 0.000000 -1.000000</direction>
+      <cast_shadows>0</cast_shadows>
+    </light>
+    <light name="my_light_02" type="directional">
+      <pose>0.000000 0.000000 30.000000 0.000000 -0.000000 0.000000</pose>
+      <diffuse>0.900000 0.900000 0.900000 1.000000</diffuse>
+      <specular>0.600000 0.600000 0.600000 1.000000</specular>
+      <attenuation>
+        <range>20.000000</range>
+      </attenuation>
+      <direction>-1.000000 0.000000 0.000000</direction>
+      <cast_shadows>0</cast_shadows>
+    </light>
+    <light name="my_light_03" type="directional">
+      <pose>0.000000 0.000000 30.000000 0.000000 -0.000000 0.000000</pose>
+      <diffuse>0.900000 0.900000 0.900000 1.000000</diffuse>
+      <specular>0.600000 0.600000 0.600000 1.000000</specular>
+      <attenuation>
+        <range>20.000000</range>
+      </attenuation>
+      <direction>0.000000 -1.000000 0.000000</direction>
+      <cast_shadows>0</cast_shadows>
+    </light>
+    <light name="my_light_04" type="directional">
+      <pose>0.000000 0.000000 30.000000 0.000000 -0.000000 0.000000</pose>
+      <diffuse>0.900000 0.900000 0.900000 1.000000</diffuse>
+      <specular>0.600000 0.600000 0.600000 1.000000</specular>
+      <attenuation>
+        <range>20.000000</range>
+      </attenuation>
+      <direction>0.000000 0.000000 1.000000</direction>
+      <cast_shadows>0</cast_shadows>
+    </light>
+    <light name="my_light_05" type="directional">
+      <pose>0.000000 0.000000 30.000000 0.000000 -0.000000 0.000000</pose>
+      <diffuse>0.900000 0.900000 0.900000 1.000000</diffuse>
+      <specular>0.600000 0.600000 0.600000 1.000000</specular>
+      <attenuation>
+        <range>20.000000</range>
+      </attenuation>
+      <direction>1.000000 0.000000 0.000000</direction>
+      <cast_shadows>0</cast_shadows>
+    </light>
+    <light name="my_light_06" type="directional">
+      <pose>0.000000 0.000000 30.000000 0.000000 -0.000000 0.000000</pose>
+      <diffuse>0.900000 0.900000 0.900000 1.000000</diffuse>
+      <specular>0.600000 0.600000 0.600000 1.000000</specular>
+      <attenuation>
+        <range>20.000000</range>
+      </attenuation>
+      <direction>0.000000 1.000000 0.000000</direction>
+      <cast_shadows>0</cast_shadows>
+    </light>
+
+
+    <model name='pessoa2'>
+      <static>0</static>
+      <link name='base'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://pessoa2/meshes/models/citizen_male.dae</uri>
+              <scale>0.4 0.4 0.4</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <pose frame=''>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://pessoa2/meshes/models/citizen_male.dae</uri>
+              <scale>0.4 0.4 0.4</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <inertial>
+          <inertia>
+            <ixx>1</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1</iyy>
+            <iyz>0</iyz>
+            <izz>1</izz>
+          </inertia>
+          <mass>1</mass>
+        </inertial>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>4.84836 -6.41015 0 0 -0 0</pose>
+    </model>
+    <model name='pessoa1'>
+      <static>0</static>
+      <link name='base'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://pessoa1/meshes/models/citizen_female.dae</uri>
+              <scale>0.4 0.4 0.4</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <pose frame=''>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://pessoa1/meshes/models/citizen_female.dae</uri>
+              <scale>0.4 0.4 0.4</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <inertial>
+          <inertia>
+            <ixx>1</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1</iyy>
+            <iyz>0</iyz>
+            <izz>1</izz>
+          </inertia>
+          <mass>1</mass>
+        </inertial>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>-2.30931 -5.19246 0 0 -0 0</pose>
+    </model>
+    <model name='pessoa2_0'>
+      <static>0</static>
+      <link name='base'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://pessoa2/meshes/models/citizen_male.dae</uri>
+              <scale>0.4 0.4 0.4</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <pose frame=''>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://pessoa2/meshes/models/citizen_male.dae</uri>
+              <scale>0.4 0.4 0.4</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <inertial>
+          <inertia>
+            <ixx>1</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1</iyy>
+            <iyz>0</iyz>
+            <izz>1</izz>
+          </inertia>
+          <mass>1</mass>
+        </inertial>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>-2.13633 -6.50165 0 0 -0 0</pose>
+    </model>
+    <model name='pessoa1_0'>
+      <static>0</static>
+      <link name='base'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://pessoa1/meshes/models/citizen_female.dae</uri>
+              <scale>0.4 0.4 0.4</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <pose frame=''>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://pessoa1/meshes/models/citizen_female.dae</uri>
+              <scale>0.4 0.4 0.4</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <inertial>
+          <inertia>
+            <ixx>1</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1</iyy>
+            <iyz>0</iyz>
+            <izz>1</izz>
+          </inertia>
+          <mass>1</mass>
+        </inertial>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>-1.51717 -23.4721 0 0 -0 0</pose>
+    </model>
+
+  <!-- Boss actor -->
+  <actor name="person_boss">
+    <link name="link">
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://pessoa3/meshes/models/pessoa3.dae</uri>
+            <scale>1 1 1</scale>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <script>
+      <loop>true</loop>
+      <delay_start>0.000000</delay_start>
+      <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.0</time>
+            <pose>2.5 -3.5 0 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>10.0</time>
+            <pose>2.5 -7.5 0 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>20.0</time>
+            <pose>2.5 -11.5 0 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>30.0</time>
+            <pose>2.5 -17.5 0 0 0 1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>40.0</time>
+            <pose>6.5 -17.0 0 0 0 1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>50.0</time>
+            <pose>10.5 -17.0 0 0 0 1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>60.0</time>
+            <pose>16.0 -17.0 0 0 0 3.14</pose>
+          </waypoint>
+          <waypoint>
+            <time>70.0</time>
+            <pose>16.0 -13.5 0 0 0 3.14</pose>
+          </waypoint>
+          <waypoint>
+            <time>80.0</time>
+            <pose>16.0 -9.5 0 0 0 3.14</pose>
+          </waypoint>
+          <waypoint>
+            <time>90.0</time>
+            <pose>15.5 -3.5 0 0 0 4.17</pose>
+          </waypoint>
+          <waypoint>
+            <time>100.0</time>
+            <pose>11.5 -3.5 0 0 0 4.17</pose>
+          </waypoint>
+          <waypoint>
+            <time>110.0</time>
+            <pose>7.0 -3.5 0 0 0 4.17</pose>
+          </waypoint>
+          <waypoint>
+            <time>120.0</time>
+            <pose>2.5 -3.5 0 0 0 0</pose>
+          </waypoint>
+      </trajectory>
+    </script>
+  </actor>
+
+  </world>
+</sdf>

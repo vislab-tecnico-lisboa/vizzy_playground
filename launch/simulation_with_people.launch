@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!-- ROS head file to simulate vizzy in gazebo   -->
+<launch>
+
+  <!-- Load Yarp plugins for real robot execution -->
+  <arg name="use_yarp" default="false"/>
+  <!-- rviz -->
+  <arg name="rviz" default="true"/>
+
+  <!-- Robot pose relative to the map -->
+  <arg name="pose" default="-x 0.0 -y 0.0 -z 0.0 -R 0.0 -P 0.0 -Y 3.1415"/>
+
+  <!-- Navigation -->
+  <arg name="navigation" default="true"/>
+  <arg name="map_topic" default="/map"/>
+  <arg name="map_file" default="isr_7th_floor_simulation.yaml"/>
+
+  <!-- Provide a map with previously acquired obstacles -->
+  <arg name="custom_obstacles" default="true"/>
+  <arg name="obstacles_map_file" default="isr_7th_floor_simulation.yaml"/>
+
+  <!-- Use lighter fake localization for simulation -->
+  <arg name="fake_localization" default="true"/>
+
+  <!-- Map -->
+  <arg name="world" default="isr_7th_floor_people.world"/>
+  <arg name="world_pkg" default="$(find vizzy_playground)"/>
+  <arg name="map_frame" default="map"/>
+
+  <!-- Robot capabilities -->
+  <arg name="disable_3d_sensor" default="true"/>
+
+  <include file="$(find vizzy_launch)/launch/vizzy_simulation.launch">
+    <arg name="navigation" value="$(arg navigation)"/>
+    <arg name="map_frame" value="$(arg map_frame)" />
+    <arg name="map_topic" value="$(arg map_topic)" />
+    <arg name="pose" value="$(arg pose)"/>
+    <arg name="world" value="$(arg world)" />
+    <arg name="world_pkg" value="$(arg world_pkg)"/>
+    <arg name="fake_localization" value="$(arg fake_localization)"/>
+    <arg name="map_file" value="$(arg map_file)" />
+    <arg name="custom_obstacles" value="$(arg custom_obstacles)"/>
+    <arg name="obstacles_map_file" value="$(arg obstacles_map_file)"/>
+    <arg name="use_yarp" value="$(arg use_yarp)"/>
+    <arg name="disable_3d_sensor" value="$(arg disable_3d_sensor)"/>
+    <arg name="rviz" value="$(arg rviz)"/>
+  </include>
+
+</launch>
