@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <Action ID="MoveBase" action_name="move_base" frame_id="map" goal_pose="0.568;0.5395;0;0;0;0.0347;0.99939"/>
+            <Action ID="MoveBase" action_name="move_base" frame_id="map" goal_pose="-16.48;-0.2331;0;0;0;0.6178;0.78627"/>
+            <Action ID="MoveBase" action_name="move_base" frame_id="map" goal_pose="-16.129;16.7376;0;0;0;0.05602;0.9984"/>
+            <Action ID="MoveBase" action_name="move_base" frame_id="map" goal_pose="1.13;5.56;0;0;0;-0.1487;0.9888"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel/>
+    <!-- ////////// -->
+</root>
+
