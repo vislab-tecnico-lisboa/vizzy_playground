@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- Behavior tree launcher -->
+<launch>
+
+<arg name="tree" default="nothing"/> <!--This is your tree name. Without the extension-->
+<arg name="loop_rate" default="10"/> <!-- The rate at which the root sends ticks to its children -->
+
+<node name="main_tree_node" pkg="vizzy_behavior_trees" type="main_tree_node" output="screen">
+    <param name="bt_xml" value="$(find vizzy_playground)/behavior_trees/$(arg tree).xml"/>
+    <param name="loop_rate" value="$(arg loop_rate)"/>
+</node>
+
+</launch>

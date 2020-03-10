@@ -27,7 +27,6 @@
   <arg name="world_pkg" default="$(find vizzy_playground)"/>
   <arg name="map_frame" default="map"/>
 
-  <!-- Robot capabilities -->
   <arg name="disable_3d_sensor" default="true"/>
 
   <include file="$(find vizzy_launch)/launch/vizzy_simulation.launch">
@@ -45,5 +44,10 @@
     <arg name="disable_3d_sensor" value="$(arg disable_3d_sensor)"/>
     <arg name="rviz" value="$(arg rviz)"/>
   </include>
+
+  <!-- Fake face detector -->
+  <node pkg="vizzy_playground" type="fake_face_detector.py" name="fake_face_detector"/>
+
+
 
 </launch>
