@@ -49,5 +49,9 @@
   <node pkg="vizzy_playground" type="fake_face_detector.py" name="fake_face_detector"/>
 
 
+  <!-- Fake speech server -->
+  <node pkg="vizzy_speech_servers" type="simulation_gcloud_tts_server.py"
+    name="gcloud_tts" output="screen">
+  </node>
 
 </launch>

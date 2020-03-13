@@ -5,6 +5,7 @@
   <include file="$(find vizzy_playground)/launch/bt_launcher.launch">
     <arg name="tree" value="security"/>
     <arg name="loop_rate" value="10"/>
+
   </include>
     
 </launch>

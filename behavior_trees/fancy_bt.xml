@@ -110,7 +110,7 @@
             <output_port name="output_val"/>
             <input_port name="pose_stamped"/>
         </Action>
-        <Action ID="SelectPoseStamped">
+        <Action ID="SelectPose">
             <input_port name="pose_array"/>
             <output_port name="pose_stamped"/>
             <input_port name="position_in_list"/>
