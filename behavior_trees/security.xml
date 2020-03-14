@@ -7,7 +7,11 @@
                 <Action ID="GetPoseArray" name="Faces" pose_array="faceList" topic="/faces"/>
                 <Action ID="SelectPose" name="Closest face" pose_array="{faceList}" pose_stamped="closest_face" position_in_list="0"/>
                 <Action ID="TimerAction" s_between_success="10"/>
+                <Action ID="GazeAtTarget" action_name="gaze" fixation_pose="{closest_face}" frame_id="base_footprint"/>
+                <Action ID="ArmRoutines" gesture="HAPPY_EMOTIVE" topic="/vizzyArmRoutines/right/command"/>
                 <Action ID="Speak" action_name="/gcloud_tts" language="pt_PT" utterance="Ora viva" voice="pt-PT-Wavenet-D"/>
+                <Action ID="WaitForXSeconds" result="SUCCESS" seconds="3"/>
+                <Action ID="ArmRoutines" gesture="ARMS_DOWN" topic="/vizzyArmRoutines/right/command"/>
             </Sequence>
             <SubTree ID="Patrol"/>
         </ReactiveFallback>
