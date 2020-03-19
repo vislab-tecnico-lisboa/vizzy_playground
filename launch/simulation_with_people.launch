@@ -27,6 +27,10 @@
   <arg name="world_pkg" default="$(find vizzy_playground)"/>
   <arg name="map_frame" default="map"/>
 
+  <!-- Gazebo -->
+  <arg name="gazebo_gui" default="true"/>
+
+
   <arg name="disable_3d_sensor" default="true"/>
 
   <include file="$(find vizzy_launch)/launch/vizzy_simulation.launch">
@@ -43,6 +47,7 @@
     <arg name="use_yarp" value="$(arg use_yarp)"/>
     <arg name="disable_3d_sensor" value="$(arg disable_3d_sensor)"/>
     <arg name="rviz" value="$(arg rviz)"/>
+    <arg name="gui" value="$(arg gazebo_gui)"/>
   </include>
 
   <!-- Fake face detector -->
