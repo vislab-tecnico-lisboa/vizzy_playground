@@ -3,6 +3,7 @@
 
   <include file="$(find vizzy_playground)/launch/simulation_with_people.launch">
     <arg name="use_yarp" value="true"/>
+    <arg name="gazebo_gui" value="false"/>
   </include>
   <include file="$(find vizzy_playground)/launch/bt_launcher.launch">
     <arg name="tree" value="security"/>
