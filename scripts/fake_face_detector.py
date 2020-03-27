@@ -42,7 +42,7 @@ def callback(data):
     idx = [i for i,x in enumerate(data.name) if ('pessoa' in x and 'base' in x) or ('person' in x and 'link' in x)]
 
     people = PoseArray()
-    people.header.frame_id = "/base_footprint"
+    people.header.frame_id = "base_footprint"
     people.header.stamp = rospy.Time.now()
 
     #Publish detections 
