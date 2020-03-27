@@ -13,7 +13,7 @@ import PyKDL
 
 
 rospy.init_node("faces_detector")
-message_pub = rospy.Publisher("/faces", PoseArray, queue_size=10)
+message_pub = rospy.Publisher("faces", PoseArray, queue_size=10)
 
 
 def callback(data):
