@@ -1,5 +1,8 @@
 #!/usr/bin/env python 
 
+#Joao Avelino, 2020.
+#ISR-Lisboa / IST
+
 #Just "detects" and sends out a PoseArray of people's faces in gazebo
 
 import rospy

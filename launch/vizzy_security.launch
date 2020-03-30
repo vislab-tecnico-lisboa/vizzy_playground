@@ -6,9 +6,10 @@
     <arg name="gazebo_gui" value="false"/>
   </include>
   <include file="$(find vizzy_playground)/launch/bt_launcher.launch">
-    <arg name="tree" value="security"/>
+    <arg name="tree" value="forward"/>
     <arg name="loop_rate" value="10"/>
-
   </include>
+  <node pkg="vizzy_playground" type="move_forward.py" name="move_forward">
+  </node>
     
 </launch>
