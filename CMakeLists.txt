@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   vizzy_tactile
   woz_dialog_msgs
   gazebo_ros
+  vizzy_behavior_trees
 )
 
 ## System dependencies are found with CMake's conventions
@@ -135,10 +136,17 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 
 add_subdirectory(gazebo_plugins/actor_collisions)
 
-## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/vizzy_playground.cpp
-# )
+
+
+## Declare a C+ shared libary to use as a plugin by behavior trees
+add_library(rosbt_coolactions_dyn SHARED
+  src/rosbt_cool_actions.cpp
+  src/string_publisher.cpp
+  )
+
+add_dependencies(rosbt_coolactions_dyn vizzy_actions)
+target_link_libraries(rosbt_coolactions_dyn PRIVATE ${BEHAVIOR_TREE_LIBRARY} ${catkin_LIBRARIES} vizzy_actions)
+target_compile_definitions(rosbt_coolactions_dyn PRIVATE  BT_PLUGIN_EXPORT )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
