@@ -16,7 +16,7 @@ import PyKDL
 
 
 rospy.init_node("faces_detector")
-message_pub = rospy.Publisher("/faces", PoseArray, queue_size=10)
+message_pub = rospy.Publisher("/people", PoseArray, queue_size=10)
 
 
 def callback(data):
@@ -76,8 +76,8 @@ def callback(data):
         person.position.z += 1.7
 
         #If people are too far away or behind the robot, we can't detect them
-        if (math.sqrt(person.position.x**2+person.position.y**2) > 4.0) or (person.position.x < 0):
-            continue
+        #if (math.sqrt(person.position.x**2+person.position.y**2) > 8.0) or (person.position.x < 0):
+            #continue
 
         people.poses.append(person)
     

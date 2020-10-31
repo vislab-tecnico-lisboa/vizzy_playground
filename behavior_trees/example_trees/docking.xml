@@ -1,0 +1,134 @@
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <ReactiveSequence>
+            <ReactiveFallback>
+                <Sequence>
+                    <Action ID="CheckBattery" percentage="k_bat_perc" service_name="kokam_battery_state" battery_state="k_bat_state"/>
+                    <Condition B="2" ID="CompareInt" name="Charged or good" A="{k_bat_state}" Condition="&lt;"/>
+                    <Action ID="CheckCharging" service_name="battery_charging_state" charging_state="charge_state"/>
+                    <Condition B="0" ID="CompareInt" name="Undocked" A="{charge_state}" Condition="=="/>
+                </Sequence>
+                <Sequence>
+                    <Condition B="0" ID="CompareInt" name="Fully charged" A="{k_bat_state}" Condition="=="/>
+                    <Sequence>
+                        <Condition B="1" ID="CompareInt" name="Charging" A="{charge_state}" Condition="=="/>
+                        <Action action="charging_action" ID="Charge" name="Undock" action_name="STOP_CHARGE"/>
+                    </Sequence>
+                </Sequence>
+                <Sequence>
+                    <Condition B="1" ID="CompareInt" name="Not Docked" A="{charge_state}" Condition="!="/>
+                    <ForceFailure>
+                        <Fallback>
+                            <RetryUntilSuccesful num_attempts="2">
+                                <SubTree ID="ChargeST"/>
+                            </RetryUntilSuccesful>
+                            <Action ID="Speak" voice="Joaquim" action_name="/nuance_speech_tts" utterance="Ajudem, pois não consigo carregar" language="pt_PT"/>
+                        </Fallback>
+                    </ForceFailure>
+                </Sequence>
+            </ReactiveFallback>
+            <Action ID="Speak" voice="Joaquim" action_name="/nuance_speech_tts" utterance="Ok" language="pt_PT"/>
+            <Action ID="WaitForXSeconds" result="SUCCESS" seconds="5"/>
+        </ReactiveSequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="ChargeST">
+        <SequenceStar>
+            <Action ID="Speak" name="Hungry" voice="Joaquim" action_name="nuance_speech_tts" utterance="Tenho fome" language="pt_PT"/>
+            <Action ID="WaitForXSeconds" name="Wait2Seconds" result="SUCCESS" seconds="2"/>
+            <Fallback>
+                <SequenceStar>
+                    <RetryUntilSuccesful num_attempts="3">
+                        <Action frame_id="map" ID="MoveBase" name="Go to first point" goal_pose="-1.7971;-5.5118;0.0;0;0;0.72703;0.68659" action_name="move_base"/>
+                    </RetryUntilSuccesful>
+                    <Parallel threshold="2">
+                        <Repeat num_cycles="10">
+                            <Action ID="Speak" voice="Joaquim" action_name="nuance_speech_ttsnuance_speech_tts" utterance="bip bip" language="pt_PT"/>
+                        </Repeat>
+                        <Action action="charging_action" ID="Charge" action_name="CHARGE"/>
+                    </Parallel>
+                </SequenceStar>
+            </Fallback>
+        </SequenceStar>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="ArmCartesian">
+            <input_port name="action_name"/>
+            <input_port name="frame_id"/>
+            <input_port name="pose"/>
+            <input_port name="type"/>
+        </Action>
+        <Action ID="ArmRoutines">
+            <input_port name="gesture"/>
+            <input_port name="topic"/>
+        </Action>
+        <Action ID="Charge">
+            <input_port name="action"/>
+            <input_port name="action_name"/>
+        </Action>
+        <SubTree ID="ChargeST"/>
+        <Action ID="CheckBattery">
+            <output_port name="battery_state" type="int"/>
+            <output_port name="percentage" type="double"/>
+            <input_port name="service_name" type="std::string"/>
+        </Action>
+        <Condition ID="CheckBool">
+            <input_port name="variable"/>
+        </Condition>
+        <Action ID="CheckCharging">
+            <output_port name="charging_state" type="int"/>
+            <input_port name="service_name" type="std::string"/>
+        </Action>
+        <Condition ID="CompareDouble">
+            <input_port name="A"/>
+            <input_port name="B"/>
+            <input_port name="Condition"/>
+        </Condition>
+        <Condition ID="CompareInt">
+            <input_port name="A"/>
+            <input_port name="B"/>
+            <input_port name="Condition"/>
+        </Condition>
+        <Action ID="DetectBlocks">
+            <output_port name="block_list" type="social_cues::BlockList_&lt;std::allocator&lt;void> >"/>
+            <input_port name="block_topic" type="std::string"/>
+        </Action>
+        <Action ID="DetectFaces">
+            <output_port name="faceListOut"/>
+            <input_port name="face_topic"/>
+        </Action>
+        <Action ID="FaceCounter">
+            <input_port name="faceListIn"/>
+            <input_port name="number_faces"/>
+        </Action>
+        <Action ID="GazeAtTarget">
+            <input_port name="action_name"/>
+            <input_port name="fixation_pose"/>
+            <input_port name="frame_id"/>
+        </Action>
+        <Action ID="MoveBase">
+            <input_port name="action_name"/>
+            <input_port name="frame_id"/>
+            <input_port name="goal_pose"/>
+        </Action>
+        <Action ID="SelectBlock">
+            <input_port name="block_list" type="social_cues::BlockList_&lt;std::allocator&lt;void> >"/>
+            <output_port name="block_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void> >"/>
+            <input_port name="position_in_list" type="std::string"/>
+        </Action>
+        <Action ID="Speak">
+            <input_port name="action_name" type="std::string"/>
+            <input_port name="language" type="std::string"/>
+            <input_port name="utterance" type="std::string"/>
+            <input_port name="voice" type="std::string"/>
+        </Action>
+        <Action ID="WaitForXSeconds">
+            <input_port name="result" default="SUCCESS">Result after specified time: SUCCESS or FAILURE</input_port>
+            <input_port name="seconds" default="5">Time in seconds</input_port>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+

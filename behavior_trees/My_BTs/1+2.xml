@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <Action ID="WaitForXSeconds" result="SUCCESS" seconds="60"/>
+            <Action ID="GetPoseArray" pose_array="pose_array" topic="/faces"/>
+            <Action ID="SelectPose" pose_array="{pose_array}" pose_stamped="closest_face" position_in_list="0"/>
+            <Action ID="GazeAtTarget" action_name="gaze" fixation_pose="{closest_face}" frame_id="base_footprint"/>
+            <Action ID="WaitForXSeconds" result="SUCCESS" seconds="1"/>
+            <Action ID="TurnToPersonCoords" face_pose="{closest_face}" final_pose="final_pose" topic="/amcl_pose"/>
+            <Action ID="MoveBase" action_name="move_base" frame_id="map" goal_pose="{final_pose}"/>
+            <Action ID="WaitForXSeconds" result="SUCCESS" seconds="2"/>
+            <Action ID="ArmRoutines" gesture="WAVE" topic="/vizzyArmRoutines/right/command"/>
+            <Action ID="WaitForXSeconds" result="SUCCESS" seconds="15"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="ArmRoutines">
+            <input_port name="gesture" type="std::string"/>
+            <input_port name="topic" type="std::string"/>
+        </Action>
+        <Action ID="GazeAtTarget">
+            <input_port name="action_name" type="std::string"/>
+            <input_port name="fixation_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <input_port name="frame_id" type="std::string"/>
+        </Action>
+        <Action ID="GetPoseArray">
+            <output_port name="pose_array" type="geometry_msgs::PoseArray_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <input_port name="topic" type="std::string"/>
+        </Action>
+        <Action ID="MoveBase">
+            <input_port name="action_name" type="std::string"/>
+            <input_port name="frame_id" type="std::string"/>
+            <input_port name="goal_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+        </Action>
+        <Action ID="SelectPose">
+            <input_port name="pose_array" type="geometry_msgs::PoseArray_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <output_port name="pose_stamped" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <input_port name="position_in_list" type="std::string"/>
+        </Action>
+        <Action ID="TurnToPersonCoords">
+            <input_port name="face_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <output_port name="final_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <input_port name="topic" type="std::string"/>
+        </Action>
+        <Action ID="WaitForXSeconds">
+            <input_port name="result" type="std::string"/>
+            <input_port name="seconds" type="std::string"/>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+

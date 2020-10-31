@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <launch>
 
-  <include file="$(find vizzy_playground)/launch/simulation_with_people.launch">
-    <arg name="use_yarp" value="true"/>
-    <arg name="gazebo_gui" value="false"/>
-  </include>
-  <include file="$(find vizzy_playground)/launch/bt_launcher.launch">
-    <arg name="tree" value="forward"/>
-    <arg name="loop_rate" value="10"/>
-  </include>
-  <node pkg="vizzy_playground" type="move_forward.py" name="move_forward">
-  </node>
+ <include file="$(find vizzy_playground)/launch/simulation_with_people.launch">
+  <arg name="use_yarp" value="true"/>
+  <arg name="gazebo_gui" value="true"/>
+ </include>
+ <include file="$(find vizzy_playground)/launch/bt_launcher.launch">
+  <arg name="tree" value="complete_tree"/>
+  <arg name="loop_rate" value="1"/>
+ </include>
+ <node pkg="vizzy_playground" type="move_forward.py" name="move_forward">
+ </node>
     
 </launch>

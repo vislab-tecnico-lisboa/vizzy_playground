@@ -20,6 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
   woz_dialog_msgs
   gazebo_ros
   vizzy_behavior_trees
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -57,11 +58,10 @@ find_package(gazebo REQUIRED)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+FILES
+FaceExtraction.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -78,10 +78,12 @@ find_package(gazebo REQUIRED)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
+ generate_messages(
+  DEPENDENCIES
+  std_msgs
+  geometry_msgs
 #   gazebo_msgs#   geometry_msgs#   mbf_msgs#   std_msgs#   vizzy_msgs#   woz_dialog_msgs
-# )
+ )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -115,6 +117,7 @@ find_package(gazebo REQUIRED)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES vizzy_playground
+CATKIN_DEPENDS message_runtime
 #  CATKIN_DEPENDS gazebo_msgs geometry_msgs mbf_msgs roscpp rospy std_msgs tf2 vizzy_msgs vizzy_tactile woz_dialog_msgs
 #  DEPENDS system_lib
 )
@@ -136,12 +139,15 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 
 add_subdirectory(gazebo_plugins/actor_collisions)
 
-
-
-## Declare a C+ shared libary to use as a plugin by behavior trees
+## Declare a C++ shared library to use as a plugin by behavior trees
 add_library(rosbt_coolactions_dyn SHARED
   src/rosbt_cool_actions.cpp
   src/string_publisher.cpp
+  src/get_approach_coords.cpp
+  src/gaze_down_coords.cpp
+  src/turn_to_person_coords.cpp
+  src/get_pose_from_face.cpp
+  src/get_state.cpp
   )
 
 add_dependencies(rosbt_coolactions_dyn vizzy_actions)

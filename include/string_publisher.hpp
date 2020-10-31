@@ -1,12 +1,12 @@
 /*
   -----------------------------------------------------
   A template to create behavior tree actions to publish to ROS topics.
-  Don't forget to replace StringPublisherBT with the name of your
+  Don't forget to replace PUBLISHER_TEMPLATE_BT with the name of your
   action!
 */
 
-#ifndef STRING_PUBLISHER_ACTIONS_HPP_
-#define STRING_PUBLISHER_ACTIONS_HPP_
+#ifndef PUBLISHER_TEMPLATE_ACTIONS_HPP_
+#define PUBLISHER_TEMPLATE_ACTIONS_HPP_
 
 #include <behaviortree_cpp_v3/behavior_tree.h>
 #include <vizzy_behavior_trees/util.hpp>
@@ -14,12 +14,18 @@
 #include <vizzy_behavior_trees/rosbt_blackboard.hpp>
 #include <std_msgs/String.h>
 
+
+/*Add the necessary publisher includes here*/
+/*--- Example --- */
+/*#include <std_msgs/Float64.h>*/
+
 using namespace BT;
 
 class StringPublisherBT : public BT::SyncActionNode
 {
     public:
         StringPublisherBT(const std::string& name, const BT::NodeConfiguration& config);
+
 
         static BT::PortsList providedPorts()
         {

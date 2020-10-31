@@ -3,8 +3,22 @@
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
         <Sequence>
-            <Action ID="WaitForXSeconds" result="SUCCESS" seconds="5"/>
-            <Action ID="StringPublisher" message="Makankosappoooo!" topic="special_beam_canon"/>
+            <Sequence>
+                <Action ID="GetPoseArray" pose_array="pose_array" topic="/faces"/>
+                <Action ID="SelectPose" pose_array="{pose_array}" pose_stamped="closest_face" position_in_list="0"/>
+            </Sequence>
+            <Parallel threshold="1">
+                <Sequence>
+                    <Action ID="GetApproachCoords" dist_to_person="1" face_pose="{closest_face}" final_pose="final_pose" topic="/amcl_pose"/>
+                    <Action ID="MoveBase" action_name="move_base" frame_id="map" goal_pose="{final_pose}"/>
+                </Sequence>
+                <Sequence>
+                    <Action ID="GetPoseArray" pose_array="pose_array" topic="/faces"/>
+                    <Action ID="SelectPose" pose_array="{pose_array}" pose_stamped="pose_stamped" position_in_list="0"/>
+                    <Action ID="GazeAtTarget" action_name="gaze" fixation_pose="{pose_stamped}" frame_id="base_footprint"/>
+                    <Action ID="WaitForXSeconds" result="SUCCESS" seconds="30"/>
+                </Sequence>
+            </Parallel>
         </Sequence>
     </BehaviorTree>
     <!-- ////////// -->
@@ -16,8 +30,8 @@
             <input_port name="type"/>
         </Action>
         <Action ID="ArmRoutines">
-            <input_port name="gesture"/>
-            <input_port name="topic"/>
+            <input_port name="gesture" type="std::string"/>
+            <input_port name="topic" type="std::string"/>
         </Action>
         <Action ID="Charge">
             <input_port name="action"/>
@@ -58,15 +72,25 @@
             <input_port name="number_faces"/>
         </Action>
         <Action ID="GazeAtTarget">
-            <input_port name="action_name"/>
-            <input_port name="fixation_pose"/>
-            <input_port name="frame_id"/>
+            <input_port name="action_name" type="std::string"/>
+            <input_port name="fixation_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <input_port name="frame_id" type="std::string"/>
+        </Action>
+        <Action ID="GazeDownCoords">
+            <input_port name="face_pose"/>
+            <output_port name="final_pose"/>
         </Action>
         <Action ID="GeneralActionlib">
             <input_port name="action_name"/>
             <input_port name="constants">A coma separated list of constants.</input_port>
             <output_port name="result">This is a string</output_port>
             <input_port name="variables">A coma separated list of variables.</input_port>
+        </Action>
+        <Action ID="GetApproachCoords">
+            <input_port name="dist_to_person"/>
+            <input_port name="face_pose"/>
+            <output_port name="final_pose"/>
+            <input_port name="topic"/>
         </Action>
         <Action ID="GetFloat64">
             <output_port name="number" type="double"/>
@@ -77,8 +101,8 @@
             <input_port name="topic"/>
         </Action>
         <Action ID="GetPoseArray">
-            <input_port name="pose_array"/>
-            <input_port name="topic"/>
+            <output_port name="pose_array" type="geometry_msgs::PoseArray_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <input_port name="topic" type="std::string"/>
         </Action>
         <Action ID="GiveFeedback">
             <input_port default="850" name="almost_thr"/>
@@ -88,14 +112,15 @@
             <input_port name="score"/>
         </Action>
         <Action ID="MoveBase">
-            <input_port name="action_name"/>
-            <input_port name="frame_id"/>
-            <input_port name="goal_pose"/>
+            <input_port name="action_name" type="std::string"/>
+            <input_port name="frame_id" type="std::string"/>
+            <input_port name="goal_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
         </Action>
         <Action ID="MoveTorso">
             <input_port name="angle"/>
             <input_port name="topic"/>
         </Action>
+        <SubTree ID="Patrol"/>
         <Action ID="ResetVars"/>
         <Action ID="SelectBlock">
             <input_port name="block_list" type="social_cues::BlockList_&lt;std::allocator&lt;void&gt; &gt;"/>
@@ -108,19 +133,19 @@
             <input_port name="pose_stamped"/>
         </Action>
         <Action ID="SelectPose">
-            <input_port name="pose_array"/>
-            <input_port name="pose_stamped"/>
-            <input_port name="position_in_list"/>
+            <input_port name="pose_array" type="geometry_msgs::PoseArray_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <output_port name="pose_stamped" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <input_port name="position_in_list" type="std::string"/>
         </Action>
         <Action ID="SenseScore">
             <output_port name="score"/>
             <input_port name="score_topic"/>
         </Action>
         <Action ID="Speak">
-            <input_port name="action_name"/>
-            <input_port name="language"/>
-            <input_port name="utterance"/>
-            <input_port name="voice"/>
+            <input_port name="action_name" type="std::string"/>
+            <input_port name="language" type="std::string"/>
+            <input_port name="utterance" type="std::string"/>
+            <input_port name="voice" type="std::string"/>
         </Action>
         <Action ID="StringPublisher">
             <input_port name="message"/>
@@ -129,9 +154,14 @@
         <Action ID="TimerAction">
             <input_port name="s_between_success">Time (s) before this node returns SUCCESS. It will return FAILURE in the meanwhile</input_port>
         </Action>
+        <Action ID="TurnToPersonCoords">
+            <input_port name="face_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <output_port name="final_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <input_port name="topic" type="std::string"/>
+        </Action>
         <Action ID="WaitForXSeconds">
-            <input_port default="SUCCESS" name="result">Result after specified time: SUCCESS or FAILURE</input_port>
-            <input_port default="5" name="seconds">Time in seconds</input_port>
+            <input_port name="result" type="std::string"/>
+            <input_port name="seconds" type="std::string"/>
         </Action>
     </TreeNodesModel>
     <!-- ////////// -->

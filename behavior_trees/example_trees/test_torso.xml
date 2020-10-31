@@ -1,0 +1,140 @@
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Fallback>
+            <Sequence>
+                <Action ID="GetPoseArray" topic="faces" name="GetFaceList" pose_array="face_array"/>
+                <Action ID="SelectPose" position_in_list="0" pose_array="{face_array}" pose_stamped="face"/>
+                <Parallel threshold="2">
+                    <Action action_name="gaze" fixation_pose="{face}" ID="GazeAtTarget" frame_id="base_footprint"/>
+                    <Fallback>
+                        <Sequence>
+                            <Action output_val="x_thresh" field="x" ID="SelectFieldFromPoseStamped" pose_stamped="{face}"/>
+                            <Condition B="1.0" ID="CompareDouble" A="{x_thresh}" Condition="&lt;"/>
+                            <ReactiveSequence>
+                                <Action output_val="y_thresh" field="y" ID="SelectFieldFromPoseStamped" pose_stamped="{face}"/>
+                                <Action angle="-20" ID="MoveTorso" topic="/vizzy/torso_joint/cmd"/>
+                            </ReactiveSequence>
+                        </Sequence>
+                        <SubTree ID="LowArms"/>
+                    </Fallback>
+                </Parallel>
+            </Sequence>
+            <SubTree ID="LowArms"/>
+        </Fallback>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="ErrorGameState">
+        <SequenceStar>
+            <Action action_name="nuance_speech_tts" ID="Speak" language="pt_PT" utterance="Não sei o estado do jogo" voice="Joaquim"/>
+            <Action action_name="nuance_speech_tts" ID="Speak" language="pt_PT" utterance="Chamem o assistente" voice="Joaquim"/>
+            <Action ID="WaitForXSeconds" seconds="60" result="SUCCESS"/>
+        </SequenceStar>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="LowArms">
+        <Action angle="20" ID="MoveTorso" topic="/vizzy/torso_joint/cmd"/>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="ArmCartesian">
+            <input_port name="action_name"/>
+            <input_port name="frame_id"/>
+            <input_port name="pose"/>
+            <input_port name="type"/>
+        </Action>
+        <Action ID="ArmRoutines">
+            <input_port name="gesture"/>
+            <input_port name="topic"/>
+        </Action>
+        <Action ID="Charge">
+            <input_port name="action"/>
+            <input_port name="action_name"/>
+        </Action>
+        <SubTree ID="ChargeST"/>
+        <Action ID="CheckBattery">
+            <output_port type="int" name="battery_state"/>
+            <output_port type="double" name="percentage"/>
+            <input_port type="std::string" name="service_name"/>
+        </Action>
+        <Condition ID="CheckBool">
+            <input_port name="variable"/>
+        </Condition>
+        <Action ID="CheckCharging">
+            <output_port type="int" name="charging_state"/>
+            <input_port type="std::string" name="service_name"/>
+        </Action>
+        <Condition ID="CompareDouble">
+            <input_port name="A"/>
+            <input_port name="B"/>
+            <input_port name="Condition"/>
+        </Condition>
+        <Condition ID="CompareInt">
+            <input_port name="A"/>
+            <input_port name="B"/>
+            <input_port name="Condition"/>
+        </Condition>
+        <Action ID="DetectBlocks">
+            <output_port type="social_cues::BlockList_&lt;std::allocator&lt;void> >" name="block_list"/>
+            <input_port type="std::string" name="block_topic"/>
+        </Action>
+        <Action ID="DetectFaces">
+            <output_port name="faceListOut"/>
+            <input_port name="face_topic"/>
+        </Action>
+        <SubTree ID="ErrorGameState"/>
+        <Action ID="FaceCounter">
+            <input_port name="faceListIn"/>
+            <input_port name="number_faces"/>
+        </Action>
+        <Action ID="GazeAtTarget">
+            <input_port name="action_name"/>
+            <input_port name="fixation_pose"/>
+            <input_port name="frame_id"/>
+        </Action>
+        <Action ID="GetInt16">
+            <output_port name="number"/>
+            <input_port name="topic"/>
+        </Action>
+        <Action ID="GetPoseArray">
+            <output_port name="pose_array"/>
+            <input_port name="topic"/>
+        </Action>
+        <Action ID="MoveBase">
+            <input_port name="action_name"/>
+            <input_port name="frame_id"/>
+            <input_port name="goal_pose"/>
+        </Action>
+        <Action ID="MoveTorso">
+            <input_port name="angle"/>
+            <input_port name="topic"/>
+        </Action>
+        <Action ID="SelectBlock">
+            <input_port type="social_cues::BlockList_&lt;std::allocator&lt;void> >" name="block_list"/>
+            <output_port type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void> >" name="block_pose"/>
+            <input_port type="std::string" name="position_in_list"/>
+        </Action>
+        <Action ID="SelectFieldFromPoseStamped">
+            <input_port name="field"/>
+            <output_port name="output_val"/>
+            <input_port name="pose_stamped"/>
+        </Action>
+        <Action ID="SelectPose">
+            <input_port name="pose_array"/>
+            <output_port name="pose_stamped"/>
+            <input_port name="position_in_list"/>
+        </Action>
+        <Action ID="Speak">
+            <input_port type="std::string" name="action_name"/>
+            <input_port type="std::string" name="language"/>
+            <input_port type="std::string" name="utterance"/>
+            <input_port type="std::string" name="voice"/>
+        </Action>
+        <Action ID="WaitForXSeconds">
+            <input_port default="SUCCESS" name="result">Result after specified time: SUCCESS or FAILURE</input_port>
+            <input_port default="5" name="seconds">Time in seconds</input_port>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+

@@ -1,5 +1,12 @@
+/*
+  -----------------------------------------------------
+  A template to create behavior tree actions to publish to ROS topics.
+  Don't forget to replace PUBLISHER_TEMPLATE_BT with the name of your
+  action!
+*/
+
 #include <string_publisher.hpp>
-#include "behaviortree_cpp_v3/bt_factory.h"
+#include <behaviortree_cpp_v3/bt_factory.h>
 
 
 std::map<std::string, ros::Publisher> StringPublisherBT::_publishers;
@@ -7,6 +14,8 @@ std::map<std::string, ros::Publisher> StringPublisherBT::_publishers;
 StringPublisherBT::StringPublisherBT(const std::string& name, const NodeConfiguration& config)
     : SyncActionNode(name, config), nh_()
 {
+
+
 }
 
 BT::NodeStatus StringPublisherBT::tick()
@@ -22,13 +31,11 @@ BT::NodeStatus StringPublisherBT::tick()
         throw BT::RuntimeError("missing required inputs [topic]: ",
                                    topic.error() );
     }
-
-    if(!message)
-    {
-        throw BT::RuntimeError("missing required inputs [message]: ",
-                                   message.error() );
-    }
     
+    if (!message)
+    {
+        throw BT::RuntimeError("missing required inputs [message]: ", 					message.error() );
+    }
 
 
     auto publisher_pair = _publishers.find(topic.value());
@@ -45,7 +52,6 @@ BT::NodeStatus StringPublisherBT::tick()
 
     std_msgs::String command;
     command.data = message.value();
-
 
     pub.publish(command);
 
