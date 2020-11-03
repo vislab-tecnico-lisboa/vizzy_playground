@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <ReactiveSequence>
+            <Action ID="GetState" state="state" topic="/state"/>
+            <Switch6 case_1="1" case_2="2" case_3="3" case_4="4" case_5="5" case_6="6" variable="{state}">
+                <ReactiveSequence>
+                    <Action ID="GetPoseFromFace" final_pose="closest_face" topic="/faces"/>
+                    <Action ID="TurnToPersonCoords" face_pose="{closest_face}" final_pose="turned_pose" name="" topic="/amcl_pose"/>
+                    <Action ID="MoveBase" action_name="move_base" frame_id="map" goal_pose="{turned_pose}" name=""/>
+                </ReactiveSequence>
+                <Sequence name="">
+                    <Action ID="WaitForXSeconds" name="" result="SUCCESS" seconds="30"/>
+                </Sequence>
+                <Sequence name="">
+                    <Action ID="WaitForXSeconds" name="" result="SUCCESS" seconds="30"/>
+                </Sequence>
+                <ReactiveSequence>
+                    <Action ID="GetPoseFromFace" final_pose="closest_face" topic="/faces"/>
+                    <Action ID="GetApproachCoords" dist_to_person="1" face_pose="{closest_face}" final_pose="final_pose" topic="/amcl_pose"/>
+                    <Action ID="MoveBase" action_name="move_base" frame_id="map" goal_pose="{final_pose}"/>
+                </ReactiveSequence>
+                <ReactiveSequence>
+                    <Action ID="GetPoseFromFace" final_pose="closest_face" topic="/faces"/>
+                    <Action ID="GetApproachCoords" dist_to_person="1" face_pose="{closest_face}" final_pose="final_pose" topic="/amcl_pose"/>
+                    <Action ID="MoveBase" action_name="move_base" frame_id="map" goal_pose="{final_pose}"/>
+                </ReactiveSequence>
+                <ReactiveSequence>
+                    <Parallel name="" threshold="2">
+                        <Action ID="Speak" action_name="gcloud_tts" language="pt_PT" name="" utterance="Muito prazer" voice="pt-PT-Wavenet"/>
+                    </Parallel>
+                    <Action ID="WaitForXSeconds" result="SUCCESS" seconds="30"/>
+                </ReactiveSequence>
+                <Action ID="WaitForXSeconds" name="" result="SUCCESS" seconds="40"/>
+            </Switch6>
+        </ReactiveSequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="ArmRoutines">
+            <input_port name="gesture" type="std::string"/>
+            <input_port name="topic" type="std::string"/>
+        </Action>
+        <Action ID="GazeAtTarget">
+            <input_port name="action_name" type="std::string"/>
+            <input_port name="fixation_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <input_port name="frame_id" type="std::string"/>
+        </Action>
+        <Action ID="GazeDownCoords">
+            <input_port name="face_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <output_port name="final_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+        </Action>
+        <Action ID="GetApproachCoords">
+            <input_port name="dist_to_person" type="double"/>
+            <input_port name="face_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <output_port name="final_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <input_port name="topic" type="std::string"/>
+        </Action>
+        <Action ID="GetPoseFromFace">
+            <output_port name="final_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <input_port name="topic" type="std::string"/>
+        </Action>
+        <Action ID="GetState">
+            <output_port name="state" type="std::string"/>
+            <input_port name="topic" type="std::string"/>
+        </Action>
+        <Action ID="MoveBase">
+            <input_port name="action_name" type="std::string"/>
+            <input_port name="frame_id" type="std::string"/>
+            <input_port name="goal_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+        </Action>
+        <Action ID="Speak">
+            <input_port name="action_name" type="std::string"/>
+            <input_port name="language" type="std::string"/>
+            <input_port name="utterance" type="std::string"/>
+            <input_port name="voice" type="std::string"/>
+        </Action>
+        <Action ID="TurnToPersonCoords">
+            <input_port name="face_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <output_port name="final_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <input_port name="topic" type="std::string"/>
+        </Action>
+        <Action ID="WaitForXSeconds">
+            <input_port name="result" type="std::string"/>
+            <input_port name="seconds" type="std::string"/>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+
