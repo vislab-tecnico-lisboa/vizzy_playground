@@ -4,12 +4,10 @@
     <BehaviorTree ID="APP">
         <Parallel threshold="2">
             <ReactiveSequence>
-                <Action ID="GetPoseFromFace" final_pose="closest_face" topic="/faces"/>
                 <Action ID="GetApproachCoords" dist_to_person="1" face_pose="{closest_face}" final_pose="final_pose" topic="/amcl_pose"/>
                 <Action ID="MoveBase" action_name="move_base" frame_id="map" goal_pose="{final_pose}"/>
             </ReactiveSequence>
             <Sequence name="">
-                <Action ID="GetPoseFromFace" final_pose="closest_face" topic="/faces"/>
                 <Action ID="ArmRoutines" gesture="HOME" name="" topic="/vizzyArmRoutines/right/command"/>
                 <Action ID="GazeDownCoords" face_pose="{closest_face}" final_pose="gaze_down"/>
                 <Action ID="GazeAtTarget" action_name="gaze" fixation_pose="{gaze_down}" frame_id="base_footprint"/>
@@ -20,6 +18,7 @@
     <BehaviorTree ID="BehaviorTree">
         <ReactiveSequence>
             <Action ID="GetState" state="state" topic="/state"/>
+            <Action ID="GetPoseFromFace" final_pose="closest_face" name="" topic="/faces"/>
             <Switch6 case_1="1" case_2="2" case_3="3" case_4="4" case_5="5" case_6="6" variable="{state}">
                 <SubTree ID="IA"/>
                 <SubTree ID="DS"/>
@@ -34,7 +33,6 @@
     <!-- ////////// -->
     <BehaviorTree ID="CS">
         <ReactiveSequence>
-            <Action ID="GetPoseFromFace" final_pose="closest_face" topic="/faces"/>
             <Action ID="GazeAtTarget" action_name="gaze" fixation_pose="{closest_face}" frame_id="base_footprint"/>
             <Parallel name="" threshold="2">
                 <Action ID="ArmRoutines" gesture="HANDSHAKE" name="" topic="vizzyArmRoutines/right/command"/>
@@ -47,7 +45,6 @@
     <BehaviorTree ID="DS">
         <Sequence name="">
             <Action ID="ArmRoutines" gesture="WAVE" name="" topic="/vizzyArmRoutines/right/command"/>
-            <Action ID="GetPoseFromFace" final_pose="closest_face" topic="/faces"/>
             <Action ID="GazeAtTarget" action_name="gaze" fixation_pose="{closest_face}" frame_id="base_footprint" name=""/>
             <Action ID="WaitForXSeconds" name="" result="SUCCESS" seconds="30"/>
         </Sequence>
@@ -56,13 +53,11 @@
     <BehaviorTree ID="FA">
         <Parallel threshold="2">
             <ReactiveSequence>
-                <Action ID="GetPoseFromFace" final_pose="closest_face" topic="/faces"/>
                 <Action ID="GetApproachCoords" dist_to_person="1" face_pose="{closest_face}" final_pose="final_pose" topic="/amcl_pose"/>
                 <Action ID="MoveBase" action_name="move_base" frame_id="map" goal_pose="{final_pose}"/>
             </ReactiveSequence>
             <Sequence name="">
                 <Action ID="ArmRoutines" gesture="HOME" name="" topic="/vizzyArmRoutines/right/command"/>
-                <Action ID="GetPoseFromFace" final_pose="closest_face" topic="/faces"/>
                 <Action ID="GazeAtTarget" action_name="gaze" fixation_pose="{closest_face}" frame_id="base_footprint"/>
             </Sequence>
         </Parallel>
@@ -71,7 +66,6 @@
     <BehaviorTree ID="HD">
         <Sequence name="">
             <Action ID="ArmRoutines" gesture="HOME" name="" topic="/vizzyArmRoutines/right/command"/>
-            <Action ID="GetPoseFromFace" final_pose="closest_face" topic="faces"/>
             <Action ID="GazeDownCoords" face_pose="{closest_face}" final_pose="head_dip"/>
             <Action ID="GazeAtTarget" action_name="gaze" fixation_pose="{head_dip}" frame_id="base_footprint"/>
         </Sequence>
@@ -79,7 +73,6 @@
     <!-- ////////// -->
     <BehaviorTree ID="IA">
         <ReactiveSequence>
-            <Action ID="GetPoseFromFace" final_pose="closest_face" topic="/faces"/>
             <Action ID="TurnToPersonCoords" face_pose="{closest_face}" final_pose="turned_pose" name="" topic="/amcl_pose"/>
             <Action ID="MoveBase" action_name="move_base" frame_id="map" goal_pose="{turned_pose}" name=""/>
             <Action ID="GazeAtTarget" action_name="gaze" fixation_pose="{closest_face}" frame_id="base_footprint" name=""/>
