@@ -48,7 +48,7 @@ class FaceExtractor:
     def __init__(self):
 
         # Initialize ROS subs and pubs
-        self.image_sub = rospy.Subscriber("/usb_cam/image_raw/compressed", CompressedImage,
+        self.image_sub = rospy.Subscriber("/vizzy/r_camera/image_rect_color/compressed", CompressedImage,
                                           self.callback, queue_size=1,
                                           buff_size=2**24)
 
@@ -63,9 +63,9 @@ class FaceExtractor:
         # Initialize openface
         self.det_parameters = of.FaceModelParameters()
         self.det_parameters.model_location = rospy.get_param('~model_location',
-            '/home/manel/OpenFace/build/bin/model/main_ceclm_general.txt')
+            '/home/vizzy/repositories/OpenFace/build/bin/model/main_ceclm_general.txt')
         self.det_parameters.mtcnn_face_detector_location = rospy.get_param('~mtcnn_face_detector_location',
-            '/home/manel/OpenFace/build/bin/model/mtcnn_detector/MTCNN_detector.txt')
+            '/home/vizzy/repositories/OpenFace/build/bin/model/mtcnn_detector/MTCNN_detector.txt')
 
         self.face_model = of.CLNF(self.det_parameters.model_location)
         self.intrinsics = None
@@ -77,7 +77,7 @@ class FaceExtractor:
 
         try:
             camera_info_data = rospy.wait_for_message(
-                "/usb_cam/camera_info", CameraInfo, MAX_WAIT)
+                "/vizzy/r_camera/camera_info", CameraInfo, MAX_WAIT)
         except rospy.ROSException as e:
             rospy.logfatal(
                 "Could not get camera parameters after %d seconds... shutdown this node", MAX_WAIT)
@@ -104,7 +104,7 @@ class FaceExtractor:
 
         self.face_extract = FaceExtraction()
         self.sequence_reader = of.SequenceCapture()
-        arguments = ['/home/manel/OpenFace/lib/local/FaceAnalyser/']
+        arguments = ['/home/vizzy/repositories/OpenFace/lib/local/FaceAnalyser/']
         face_analysis_params = of.FaceAnalyserParameters(arguments)
         self.face_analyser = of.FaceAnalyser(face_analysis_params)
 
