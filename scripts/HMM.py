@@ -172,6 +172,7 @@ class FaceExtractor:
             [pose_estimate[0], pose_estimate[1], pose_estimate[2]])
         self.face_extract.poses_R = np.array(
             [pose_estimate[3], pose_estimate[4]])
+        print("Landmarks: " + str(landmarks))
         self.face_extract.left_landmarks = np.array(
             [landmarks[0][36], landmarks[0][39], landmarks[1][36], landmarks[1][39]])
         self.face_extract.right_landmarks = np.array(
@@ -223,9 +224,9 @@ class HMModel:
         x_train = np.empty((1, 7))
         lengths_train = []
 
-        for filename in os.listdir("good sequences/Train"):
+        for filename in os.listdir("/home/vizzy/repositories/Kendon-HMM/Train"):
         # Reads every sequence file in Train folder
-            f = open(os.path.join('good sequences/Train', filename), 'r')
+            f = open(os.path.join('/home/vizzy/repositories/Kendon-HMM/Train', filename), 'r')
             lines = f.readlines()
             lines.pop(0)
 
@@ -259,9 +260,9 @@ class HMModel:
         states_test = []
 
         # Reads files from Test folder
-        for filename in os.listdir("good sequences/Test"):
+        for filename in os.listdir("/home/vizzy/repositories/Kendon-HMM/Test"):
 
-            f = open(os.path.join('good sequences/Test', filename), 'r')
+            f = open(os.path.join('/home/vizzy/repositories/Kendon-HMM/Test', filename), 'r')
             lines = f.readlines()
             lines.pop(0)
 
