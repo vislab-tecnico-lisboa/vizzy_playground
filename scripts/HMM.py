@@ -133,9 +133,9 @@ class FaceExtractor:
         im = image_np[cy-crop_res[0]/2:cy+crop_res[0]/2,
                       cx-crop_res[1]/2:cx+crop_res[1]/2]
 
-        s = 1024/(cx*2.0)
+        #s = 1024/(cx*2.0)
 
-        im = cv2.resize(image_np, (int(s*cx), int(s*cy)))
+        #im = cv2.resize(image_np, (int(s*cx), int(s*cy)))
 
         gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY, dstCn=0)
         grayscale_image = np.ubyte(gray)
@@ -143,8 +143,8 @@ class FaceExtractor:
 
         f_x = self.intrinsics[0, 0]
         f_y = self.intrinsics[1, 1]
-        c_x = self.intrinsics[0, 2]  # -x_offset
-        c_y = self.intrinsics[1, 2]  # -y_offset
+        c_x = self.intrinsics[0, 2]  -x_offset
+        c_y = self.intrinsics[1, 2]  -y_offset
 
         # Estimation of the head pose through OF
         pose_estimate = of.GetPose(self.face_model, f_x, f_y, c_x, c_y)
@@ -166,13 +166,11 @@ class FaceExtractor:
 
         # Estimation of action units for smile calculation
         aus_intensity = self.face_analyser.GetCurrentAUsReg()
-
         # Updating face_extract variable with the new information
         self.face_extract.poses_T = np.array(
             [pose_estimate[0], pose_estimate[1], pose_estimate[2]])
         self.face_extract.poses_R = np.array(
             [pose_estimate[3], pose_estimate[4]])
-        print("Landmarks: " + str(landmarks))
         self.face_extract.left_landmarks = np.array(
             [landmarks[0][36], landmarks[0][39], landmarks[1][36], landmarks[1][39]])
         self.face_extract.right_landmarks = np.array(
@@ -583,7 +581,7 @@ class HMModel:
         self.iteration += 1
 
         # Waits 0.2 seconds (time interval between observations)
-        time.sleep(0.2)
+        time.sleep(2)
 
 
            
