@@ -2,10 +2,10 @@
 <root main_tree_to_execute="BehaviorTree">
     <!-- ////////// -->
     <BehaviorTree ID="APP">
-        <Parallel success_threshold="2" failure_threshold="1">
+        <Parallel threshold="2">
             <ReactiveSequence>
                 <Action ID="GetPoseFromFace" final_pose="closest_face" topic="/faces"/>
-                <Action ID="GetApproachCoords" dist_to_person="1" face_pose="{closest_face}" final_pose="final_pose" topic="/amcl_pose"/>
+                <Action ID="GetApproachCoords" dist_to_person="0.5" face_pose="{closest_face}" final_pose="final_pose" topic="/amcl_pose"/>
                 <Action ID="MoveBase" action_name="move_base" frame_id="map" goal_pose="{final_pose}"/>
             </ReactiveSequence>
             <Sequence name="">
@@ -36,7 +36,7 @@
         <ReactiveSequence>
             <Action ID="GetPoseFromFace" final_pose="closest_face" topic="/faces"/>
             <Action ID="GazeAtTarget" action_name="gaze" fixation_pose="{closest_face}" frame_id="base_footprint"/>
-            <Parallel success_threshold="2" failure_threshold="1">
+            <Parallel threshold="2">
                 <Action ID="ArmRoutines" gesture="HANDSHAKE" name="" topic="vizzyArmRoutines/right/command"/>
                 <Action ID="Speak" action_name="gcloud_tts" language="pt_PT" name="" utterance="Muito prazer" voice="pt-PT-Wavenet"/>
             </Parallel>
@@ -54,10 +54,10 @@
     </BehaviorTree>
     <!-- ////////// -->
     <BehaviorTree ID="FA">
-        <Parallel success_threshold="2" failure_threshold="1">
+        <Parallel threshold="2">
             <ReactiveSequence>
                 <Action ID="GetPoseFromFace" final_pose="closest_face" topic="/faces"/>
-                <Action ID="GetApproachCoords" dist_to_person="1" face_pose="{closest_face}" final_pose="final_pose" topic="/amcl_pose"/>
+                <Action ID="GetApproachCoords" dist_to_person="0.5" face_pose="{closest_face}" final_pose="final_pose" topic="/amcl_pose"/>
                 <Action ID="MoveBase" action_name="move_base" frame_id="map" goal_pose="{final_pose}"/>
             </ReactiveSequence>
             <Sequence name="">

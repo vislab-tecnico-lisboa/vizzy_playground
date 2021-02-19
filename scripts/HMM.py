@@ -9,13 +9,16 @@ import scipy.stats as stats
 import tf.transformations
 import cv2
 import threading
+import tf2_ros
+import tf2_geometry_msgs
+import tf_conversions
+import roslib
 from openface import pyopenface as of
 from vizzy_playground.msg import FaceExtraction
 from std_msgs.msg import Int16
-from geometry_msgs.msg import PoseWithCovarianceStamped
-from sensor_msgs.msg import CameraInfo
-from sensor_msgs.msg import CompressedImage
-from geometry_msgs.msg import PoseArray
+from geometry_msgs.msg import PoseWithCovarianceStamped,PoseArray,PoseStamped
+from sensor_msgs.msg import CameraInfo,CompressedImage
+
 
 class PeopleExtractor:
 
@@ -48,7 +51,11 @@ class FaceExtractor:
     def __init__(self):
 
         # Initialize ROS subs and pubs
-        self.image_sub = rospy.Subscriber("/vizzy/r_camera/image_rect_color/compressed", CompressedImage,
+
+        self.tfBuffer = tf2_ros.Buffer()
+        self.listener = tf2_ros.TransformListener(self.tfBuffer)
+        #/vizzy/r_camera/image_rect_color/compressed
+        self.image_sub = rospy.Subscriber("/usb_cam/image_raw/compressed", CompressedImage,
                                           self.callback, queue_size=1,
                                           buff_size=2**24)
 
@@ -63,9 +70,9 @@ class FaceExtractor:
         # Initialize openface
         self.det_parameters = of.FaceModelParameters()
         self.det_parameters.model_location = rospy.get_param('~model_location',
-            '/home/vizzy/repositories/OpenFace/build/bin/model/main_ceclm_general.txt')
+            '/home/manel/OpenFace/build/bin/model/main_ceclm_general.txt')
         self.det_parameters.mtcnn_face_detector_location = rospy.get_param('~mtcnn_face_detector_location',
-            '/home/vizzy/repositories/OpenFace/build/bin/model/mtcnn_detector/MTCNN_detector.txt')
+            '/home/manel/OpenFace/build/bin/model/mtcnn_detector/MTCNN_detector.txt')
 
         self.face_model = of.CLNF(self.det_parameters.model_location)
         self.intrinsics = None
@@ -76,8 +83,9 @@ class FaceExtractor:
         print("Waiting for camera_info topic to be available")
 
         try:
+            #/vizzy/r_camera/camera_info
             camera_info_data = rospy.wait_for_message(
-                "/vizzy/r_camera/camera_info", CameraInfo, MAX_WAIT)
+                "/usb_cam/camera_info", CameraInfo, MAX_WAIT)
         except rospy.ROSException as e:
             rospy.logfatal(
                 "Could not get camera parameters after %d seconds... shutdown this node", MAX_WAIT)
@@ -104,7 +112,7 @@ class FaceExtractor:
 
         self.face_extract = FaceExtraction()
         self.sequence_reader = of.SequenceCapture()
-        arguments = ['/home/vizzy/repositories/OpenFace/lib/local/FaceAnalyser/']
+        arguments = ['/home/manel/OpenFace/lib/local/FaceAnalyser/']
         face_analysis_params = of.FaceAnalyserParameters(arguments)
         self.face_analyser = of.FaceAnalyser(face_analysis_params)
 
@@ -133,9 +141,9 @@ class FaceExtractor:
         im = image_np[cy-crop_res[0]/2:cy+crop_res[0]/2,
                       cx-crop_res[1]/2:cx+crop_res[1]/2]
 
-        #s = 1024/(cx*2.0)
+        s = 1024/(cx*2.0)
 
-        #im = cv2.resize(image_np, (int(s*cx), int(s*cy)))
+        im = cv2.resize(image_np, (int(s*cx), int(s*cy)))
 
         gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY, dstCn=0)
         grayscale_image = np.ubyte(gray)
@@ -143,11 +151,32 @@ class FaceExtractor:
 
         f_x = self.intrinsics[0, 0]
         f_y = self.intrinsics[1, 1]
-        c_x = self.intrinsics[0, 2]  -x_offset
-        c_y = self.intrinsics[1, 2]  -y_offset
+        c_x = self.intrinsics[0, 2]  # -x_offset
+        c_y = self.intrinsics[1, 2]  # -y_offset
 
         # Estimation of the head pose through OF
         pose_estimate = of.GetPose(self.face_model, f_x, f_y, c_x, c_y)
+        pose_estimate_stamped = PoseStamped()
+        pose_estimate_stamped.header.frame_id = self.header.frame_id
+        pose_estimate_stamped.header.stamp = self.header.stamp
+        pose_estimate_stamped.pose.position.x = pose_estimate[0]
+        pose_estimate_stamped.pose.position.y = pose_estimate[1]
+        pose_estimate_stamped.pose.position.z = pose_estimate[2]
+
+        pose_estimate_stamped.pose.orientation.w = 1
+
+
+        try:
+            transform = self.tfBuffer.lookup_transform("base_footprint",
+                                                       self.header.frame_id,
+                                                       self.header.stamp)
+        except Exception as e:
+            print("Error in transform: " + str(e))
+            return
+
+
+        ptf = tf2_geometry_msgs.do_transform_pose(pose_estimate_stamped, transform)
+        euler_angles = tf.transformations.euler_from_quaternion(ptf.pose.orientation,axes='sxyz')
 
         # Estimation of head landmarks for gaze calculation
         landmarks = self.face_model.GetShape(f_x, f_y, c_x, c_y)
@@ -166,11 +195,16 @@ class FaceExtractor:
 
         # Estimation of action units for smile calculation
         aus_intensity = self.face_analyser.GetCurrentAUsReg()
+
         # Updating face_extract variable with the new information
         self.face_extract.poses_T = np.array(
-            [pose_estimate[0], pose_estimate[1], pose_estimate[2]])
+             [ptf.pose.position.x, ptf.pose.position.y, ptf.pose.position.z])
         self.face_extract.poses_R = np.array(
-            [pose_estimate[3], pose_estimate[4]])
+             [euler_angles[1], euler_angles[2],euler_angles[0]])
+        # self.face_extract.poses_T = np.array(
+        #     [pose_estimate[0], pose_estimate[1], pose_estimate[2]])
+        # self.face_extract.poses_R = np.array(
+        #     [pose_estimate[3], pose_estimate[4]])
         self.face_extract.left_landmarks = np.array(
             [landmarks[0][36], landmarks[0][39], landmarks[1][36], landmarks[1][39]])
         self.face_extract.right_landmarks = np.array(
@@ -213,7 +247,18 @@ class HMModel:
         self.iteration = 0
         threading.Thread(target = self.keys_thread).start()
         self.key = ''
+        try:
+            transform = self.tfBuffer.lookup_transform("base_footprint",
+                                                       "neck_tilt_link",
+                                                       self.header.stamp)
+        except Exception as e:
+            print("Error in transform: " + str(e))
+            return
 
+
+        self.face_point = [transform.transform.translation.x, transform.transform.translation.y, transform.transform.translation.z]
+        
+        
         print("movements? (1:Distance Salutation, 2:Close Salutation, 3:Head Dip)")
         
 
@@ -222,9 +267,9 @@ class HMModel:
         x_train = np.empty((1, 7))
         lengths_train = []
 
-        for filename in os.listdir("/home/vizzy/repositories/Kendon-HMM/Train"):
+        for filename in os.listdir("good sequences/Train"):
         # Reads every sequence file in Train folder
-            f = open(os.path.join('/home/vizzy/repositories/Kendon-HMM/Train', filename), 'r')
+            f = open(os.path.join('good sequences/Train', filename), 'r')
             lines = f.readlines()
             lines.pop(0)
 
@@ -258,9 +303,9 @@ class HMModel:
         states_test = []
 
         # Reads files from Test folder
-        for filename in os.listdir("/home/vizzy/repositories/Kendon-HMM/Test"):
+        for filename in os.listdir("good sequences/Test"):
 
-            f = open(os.path.join('/home/vizzy/repositories/Kendon-HMM/Test', filename), 'r')
+            f = open(os.path.join('good sequences/Test', filename), 'r')
             lines = f.readlines()
             lines.pop(0)
 
@@ -404,20 +449,23 @@ class HMModel:
 
         Rx = self.face_extract.poses_R[0]
         Ry = self.face_extract.poses_R[1]
+        Rz = self.face_extract.poses_R[2]
         Tx = self.face_extract.poses_T[0]
         Ty = self.face_extract.poses_T[1]
         Tz = self.face_extract.poses_T[2]
+        T = [Tx, Ty, Tz]
 
         # this point (x,y) is where the face is pointing at, in the plane of the camera
-        x_point = abs(Tz)*tan(Ry) - Tx
-        y_point = abs(Tz)*tan(Rx) + Ty
+        y_point = abs(Tx)*tan(Rz) - Ty
+        z_point = abs(Tx)*tan(Ry) + Tz
+        gaze_point = [0, y_point, z_point]
 
-        distance = np.linalg.norm([Tx-x_point, Ty-y_point, Tz])
+        distance = np.linalg.norm(T-gaze_point)
         # same procedure as gaze_1
-        dist_to_camera = np.linalg.norm((x_point, y_point))
+        dist_to_face = np.linalg.norm(gaze_point - self.face_point)
 
         radius = distance * tan(radians(angle/2))
-        return (dist_to_camera/radius)
+        return (dist_to_face/radius)
 
     def gaze_detector(self, angle, change_threshold):
 
@@ -516,34 +564,34 @@ class HMModel:
         t = time.time()
         
         self.face_extract = ros_data
-        
-        self.robot_pose = rospy.wait_for_message("/amcl_pose", PoseWithCovarianceStamped)
+        #self.robot_pose = rospy.wait_for_message("/amcl_pose", PoseWithCovarianceStamped)
         
         distance = self.distance_detector()
         gaze = self.gaze_detector_2(60)
         smile = self.smile_detector()
+        speed = 0
 
         # For speed calculation
-        robot_position = self.robot_pose.pose.pose.position
-        robot_position = np.array([robot_position.x,robot_position.y])*1000
-        robot_orientation = self.robot_pose.pose.pose.orientation
-        robot_orientation = [robot_orientation.x,robot_orientation.y,robot_orientation.z,robot_orientation.w]
+        # robot_position = self.robot_pose.pose.pose.position
+        # robot_position = np.array([robot_position.x,robot_position.y])*1000
+        # robot_orientation = self.robot_pose.pose.pose.orientation
+        # robot_orientation = [robot_orientation.x,robot_orientation.y,robot_orientation.z,robot_orientation.w]
         
-        euler_angles = tf.transformations.euler_from_quaternion(robot_orientation,axes='sxyz')
-        yaw = euler_angles[2]
-        R_matrix = np.array([[cos(yaw),-sin(yaw)],[sin(yaw),cos(yaw)]])
-        person_position = [self.face_extract.poses_T[2], self.face_extract.poses_T[0]]
+        # euler_angles = tf.transformations.euler_from_quaternion(robot_orientation,axes='sxyz')
+        # yaw = euler_angles[2]
+        # R_matrix = np.array([[cos(yaw),-sin(yaw)],[sin(yaw),cos(yaw)]])
+        # person_position = [self.face_extract.poses_T[2], self.face_extract.poses_T[0]]
 
-        person_position_world = R_matrix.dot(person_position) + robot_position
+        # person_position_world = R_matrix.dot(person_position) + robot_position
 
-        if self.prev_time == 0:
-            speed = 0
+        # if self.prev_time == 0:
+        #     speed = 0
 
-        else:
-            speed = self.speed_detector(robot_position, self.prev_person_position, self.prev_time)
+        # else:
+        #     speed = self.speed_detector(robot_position, self.prev_person_position, self.prev_time)
         
-        self.prev_time = t
-        self.prev_person_position = person_position_world
+        # self.prev_time = t
+        # self.prev_person_position = person_position_world
 
 
         obs = [distance, speed, gaze, smile, self.movements[0],self.movements[1],self.movements[2]]
@@ -553,7 +601,7 @@ class HMModel:
         self.alpha = self.iterate(obs, self.alpha, self.iteration)
         state = np.argmax(self.alpha)
         new_state = self.find_true_state(state)
-        self.state_pub.publish(new_state)
+        #self.state_pub.publish(new_state)
      
         print(obs)
         print(new_state)
@@ -581,7 +629,7 @@ class HMModel:
         self.iteration += 1
 
         # Waits 0.2 seconds (time interval between observations)
-        time.sleep(2)
+        time.sleep(0.2)
 
 
            
@@ -589,5 +637,5 @@ class HMModel:
 if __name__ == '__main__':
     rospy.init_node('hmm')
     server1 = FaceExtractor()
-    server2 = HMModel()
+    #server2 = HMModel()
     rospy.spin()

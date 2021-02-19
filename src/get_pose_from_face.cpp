@@ -59,9 +59,9 @@ BT::NodeStatus GetPoseFromFaceBT::tick()
     final_pose.pose.orientation.y = cos(roll/2) * sin(pitch/2) * cos(yaw/2) + sin(roll/2) * cos(pitch/2) * sin(yaw/2);
     final_pose.pose.orientation.z = cos(roll/2) * cos(pitch/2) * sin(yaw/2) - sin(roll/2) * sin(pitch/2) * cos(yaw/2);
     final_pose.pose.orientation.w = cos(roll/2) * cos(pitch/2) * cos(yaw/2) + sin(roll/2) * sin(pitch/2) * sin(yaw/2);
-    final_pose.pose.position.x = t_z;
-    final_pose.pose.position.y = t_x;
-    final_pose.pose.position.z = t_y;
+    final_pose.pose.position.x = t_x;
+    final_pose.pose.position.y = t_y;
+    final_pose.pose.position.z = t_z;
 
 
     auto result = setOutput("final_pose", final_pose);
